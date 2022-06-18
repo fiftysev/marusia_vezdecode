@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { teamName, teamNameLocalized } from "./config.js";
+import { makeResponse } from "./utils/makeResponse.js";
+import { greeting, greetingTTS } from "./responses/greeting.js";
 
 const app = express();
 const port = 3000;
@@ -22,15 +24,9 @@ app.post("/hook", ({ body }, res) => {
     (command.includes(teamName) || command.includes(teamNameLocalized)) &&
     (command.includes("вездекод") || command.includes("вездеход"))
   ) {
-    return res.send({
-      response: {
-        text: "Привет вездекодерам",
-        tts: "Привет вездек+одерам",
-        end_session: false,
-      },
-      session,
-      version,
-    });
+    return res.send(
+      makeResponse(greeting, greetingTTS, false, session, version)
+    );
   }
   return res.send({
     response: {
