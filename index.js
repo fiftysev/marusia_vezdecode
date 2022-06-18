@@ -151,6 +151,10 @@ app.post("/hook", ({ body }, res) => {
             type: "MiniApp",
             url: "https://vk.com/app7923597",
           },
+          {
+            type: "BigImage",
+            image_id: 457239017,
+          },
         ]
       )
     );
