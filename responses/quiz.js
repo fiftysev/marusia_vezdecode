@@ -1,3 +1,4 @@
+import { stat } from "fs";
 import { answerMapping } from "../utils/marusya_encoding.js";
 
 class Quiz {
@@ -85,15 +86,81 @@ class Quiz {
   ];
 
   constructor() {}
-
+  /*
+  state: {
+    question: (number),
+    answers: {
+      category_name (string): isRight (boolean) 
+    }
+    current_category: (string)
+  }
+   */
   updateState(state, category, answer) {
     const mappedAnswer = answerMapping[answer];
     if (mappedAnswer == undefined || null) {
       throw new SyntaxError("Попробовать бы еще раз");
     }
     state.answers[category] =
-      this.questions[this.state.question] === mappedAnswer;
+      this.questions[state.question].rightAnswer === mappedAnswer;
+    state.question++;
+    if (state.question < 8)
+      state.current_category = this.questions[state.question].category;
     return state;
+  }
+
+  recommendation(state) {
+    let idx = 1;
+    let categories = [];
+    let resText = `
+    Твои результаты говорят, что:
+    `;
+    for (let ans in state.answers) {
+      if (state.answers[ans]) categories.push(ans);
+      continue;
+    }
+
+    if (categories.length == 0) {
+      resText +=
+        "Ты заинтересован(a) в IT, что уже делает тебя крутым, взгляни на каждую из категорий, ведь крутые решения не всегда зависят от направления\n";
+      return resText;
+    }
+
+    if (categories.length == 8) {
+      resText +=
+        "Ого, да ты прямо любишь свою профессиональную сферу, испытай свои силы во всех категориях и поборись за звание лучшего!\n";
+      return resText;
+    }
+
+    if (categories.includes("Web") || categories.includes("Backend")) {
+      resText +=
+        "Ты знаешь что-то о веб-разработке, обрати внимания на задания Web и Backend :)\n";
+    }
+
+    if (categories.includes("Mobile"))
+      resText +=
+        "У тебя есть интерес к мобильной разработке, можешь попробовать свои силы в категории Mobile ;)\n";
+
+    if (categories.includes("Computer Vision")) {
+      resText +=
+        "Кажется, задания категорий Анализ данных и Computer Vision могли бы заинтересовать тебя:)\n";
+    }
+
+    if (categories.includes("Маруся")) {
+      resText +=
+        "Не все еще освоили работу с Марусей (и зря), дерзай, категория Маруся для тебя!\n";
+    }
+
+    if (categories.includes("VK MiniApps"))
+      resText += "Мини-приложения - это очень интересно, попробуй!\n";
+    if (categories.includes("GameDev"))
+      resText +=
+        "Попробуй увлечь своей историей и визуалом, сделай пару заданий в GameDev []_[]!\n";
+    if (categories.includes("Дизайн интерфейсов"))
+      resText +=
+        "Кажется, у тебя есть знания про UI/UX, взгляни на задания категории Дизайн интерфейсов ;)\n";
+    resText +=
+      "\nНе забывай, что ты можешь решить задачи даже из тех сфер, которые тебе мало знакомы, главное пробуй!";
+    return resText;
   }
 }
 

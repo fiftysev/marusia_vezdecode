@@ -15,4 +15,4 @@ const quizAnswerTrigger = [
   "третье",
 ];
 
-export { quizTrigger };
+export { quizTrigger, quizAnswerTrigger };

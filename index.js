@@ -3,8 +3,10 @@ import cors from "cors";
 import { teamName, teamNameLocalized } from "./config.js";
 import { makeResponse } from "./utils/makeResponse.js";
 import { greeting, greetingTTS } from "./responses/greeting.js";
-import { quizTrigger } from "./utils/triggers.js";
+import { quizAnswerTrigger, quizTrigger } from "./utils/triggers.js";
 import { Quiz } from "./responses/quiz.js";
+import { stat } from "fs";
+import { answerMapping } from "./utils/marusya_encoding.js";
 
 const app = express();
 const quizController = new Quiz();
@@ -23,6 +25,8 @@ app.post("/hook", ({ body }, res) => {
   const version = body.version;
   const parsedRequest = body.request;
   const command = parsedRequest.command;
+
+  let state = body.state.session;
   if (
     (command.includes(teamName) || command.includes(teamNameLocalized)) &&
     (command.includes("вездекод") || command.includes("вездеход"))
@@ -33,7 +37,7 @@ app.post("/hook", ({ body }, res) => {
   }
   if (quizTrigger.includes(command)) {
     const firstQuestion = quizController.questions[0];
-    res.send(
+    return res.send(
       makeResponse(
         `
     Начинаем викторину!
@@ -46,9 +50,50 @@ app.post("/hook", ({ body }, res) => {
         session,
         version,
         {
+          question: 0,
           answers: {},
           current_category: firstQuestion.category,
         }
+      )
+    );
+  }
+  if (quizAnswerTrigger.includes(command) && state != {}) {
+    if (state.question < 7) {
+      const newState = quizController.updateState(
+        state,
+        state.current_category,
+        command
+      );
+      const nextQuestion = quizController.questions[newState.question];
+      return res.send(
+        makeResponse(
+          `
+      Следующий вопрос:
+      ${nextQuestion.question}
+      `,
+          "",
+          false,
+          session,
+          version,
+          newState
+        )
+      );
+    }
+    const lastState = quizController.updateState(
+      state,
+      state.current_category,
+      command
+    );
+    return res.send(
+      makeResponse(
+        `
+      Опрос Окончен!
+      ${quizController.recommendation(lastState)}
+      `,
+        "",
+        false,
+        session,
+        version
       )
     );
   }
