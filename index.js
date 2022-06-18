@@ -27,7 +27,7 @@ app.post("/hook", ({ body }, res) => {
   const session = body.session;
   const version = body.version;
   const parsedRequest = body.request;
-  const command = parsedRequest.command;
+  const command = parsedRequest.command.toLowerCase();
 
   let state = body.state.session;
   if (

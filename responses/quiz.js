@@ -132,9 +132,16 @@ class Quiz {
       return resText;
     }
 
-    categories.forEach((element) => {
-      resText += quizResultsText[element];
-    });
+    if (categories.length < 4) {
+      categories.forEach((element) => {
+        resText += quizResultsText[element];
+      });
+    } else {
+      resText += "Teбе могут подойти следующие категории:\n";
+      categories.forEach((element) => {
+        resText += element + "\n";
+      });
+    }
 
     resText +=
       "\nНе забывай, что ты можешь решить задачи даже из тех сфер, которые тебе мало знакомы, главное пробуй!";
