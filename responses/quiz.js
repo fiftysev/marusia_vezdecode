@@ -1,3 +1,5 @@
+import { answerMapping } from "../utils/marusya_encoding";
+
 class Quiz {
   questions = [
     {
@@ -84,12 +86,12 @@ class Quiz {
 
   state = {
     question: 0,
-    scoreByCategory: {},
+    answers: {},
   };
 
   constructor() {
     this.questions.forEach((element) => {
-      this.state.scoreByCategory[element] = false;
+      this.state.answers[element] = false;
     });
   }
 
@@ -101,5 +103,12 @@ class Quiz {
     return this.questions[state.question];
   }
 
-  updateState(category, answer) {}
+  updateState(category, answer) {
+    const mappedAnswer = answerMapping[answer];
+    if (mappedAnswer == undefined || null) {
+      throw new SyntaxError("Попробовать бы еще раз");
+    }
+    this.state.answers[category] =
+      this.questions[this.state.question] === mappedAnswer;
+  }
 }

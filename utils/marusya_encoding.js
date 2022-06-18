@@ -1,5 +1,5 @@
 //prettier-ignore
-const mapping = {
+const answerMapping = {
   "1": 1,
   "2": 2,
   "3": 3,
@@ -13,3 +13,5 @@ const mapping = {
   "второе": 2,
   "третье": 3,
 };
+
+export { answerMapping };
