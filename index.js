@@ -26,7 +26,7 @@ app.use(cors());
 
 app.post("/hook", ({ body }, res) => {
   const session = body.session;
-  console.log(session);
+
   const version = body.version;
   const parsedRequest = body.request;
   const command = parsedRequest.command.toLowerCase();
@@ -76,13 +76,13 @@ app.post("/hook", ({ body }, res) => {
     const firstQuestion = quizController.questions[0];
     return res.send(
       makeResponse(
-        `
-    Начинаем викторину!
+        `Начинаем викторину!
     Ответы должны быть в формате 1, 2, 3 (цифра или числительное)
+
     Первый вопрос:
-    ${firstQuestion.text}
-    `,
-        `Первый вопрос
+    ${firstQuestion.text}`,
+        `
+        Начинаем викторину! Ответы должны быть в формате 1, 2, 3 (цифра или числительное) Первый вопрос
         ${firstQuestion.tts}
         `,
         false,
@@ -100,18 +100,15 @@ app.post("/hook", ({ body }, res) => {
     if (state.answers == undefined) {
       return res.send(
         makeResponse(
-          `
-          Повторите ваш запрос:(
+          `Повторите ваш запрос:(
           Список доступных команд:
           --- ${teamName} вездекод - Приветствие
-          --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить
-            `,
+          --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить`,
           `
             Повторите ваш запрос:(
             Список доступных команд:
             --- ${teamName} вездекод - Приветствие
-            --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить
-              `,
+            --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить`,
           false,
           session,
           version,
@@ -128,17 +125,24 @@ app.post("/hook", ({ body }, res) => {
       const nextQuestion = quizController.questions[newState.question];
       return res.send(
         makeResponse(
-          `
-      Следующий вопрос:
-      ${nextQuestion.text}
-      `,
-          `Следующий вопрос
+          `Следующий вопрос:
+      ${nextQuestion.text}`,
+          `${
+            newState.lastAnswerResult
+              ? "<speaker audio=marusia-sounds/game-powerup-2>"
+              : "<speaker audio=marusia-sounds/game-loss-3>"
+          } 
+          Следующий вопрос
           ${nextQuestion.tts}
           `,
           false,
           session,
           version,
-          newState
+          newState,
+          {
+            type: "BigImage",
+            image_id: "457239017",
+          }
         )
       );
     }
@@ -150,11 +154,10 @@ app.post("/hook", ({ body }, res) => {
     const recommendation = quizController.recommendation(lastState);
     return res.send(
       makeResponse(
-        `
-      Викторина окончена!
+        `Викторина окончена!
       ${recommendation}
       `,
-        recommendation,
+        "<speaker audio=marusia-sounds/game-win-2>" + recommendation,
         false,
         session,
         version
@@ -174,8 +177,7 @@ app.post("/hook", ({ body }, res) => {
   }
   return res.send(
     makeResponse(
-      `
-      Повторите ваш запрос:(
+      `Повторите ваш запрос:(
       Список доступных команд:
       --- ${teamName} вездекод - Приветствие
       --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить
@@ -184,8 +186,7 @@ app.post("/hook", ({ body }, res) => {
         Повторите ваш запрос:(
         Список доступных команд:
         --- ${teamName} вездекод - Приветствие
-        --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить
-          `,
+        --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить`,
       false,
       session,
       version,

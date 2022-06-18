@@ -4,7 +4,8 @@ function makeResponse(
   end_session,
   session,
   version,
-  session_state = {}
+  session_state = {},
+  card = {}
 ) {
   return {
     response: {
@@ -12,6 +13,7 @@ function makeResponse(
       tts,
       end_session,
     },
+    card,
     session,
     version,
     session_state,
