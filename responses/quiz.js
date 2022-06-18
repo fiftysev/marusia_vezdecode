@@ -5,82 +5,42 @@ import { quizResultsText } from "./quizResults.js";
 class Quiz {
   questions = [
     {
-      question: `
-      Laravel - это
-      1 - Синоним слова любовь
-      2 - Фреймворк для backend разработки на PHP,
-      3 - Библиотека для фронтенда
-      `,
+      question: `Laravel - это\n1 - Синоним слова любовь\n2 - Фреймворк для backend разработки на PHP,\n3 - Библиотека для фронтенда`,
       rightAnswer: 2,
       category: "Backend",
     },
     {
-      question: `
-      Почему популярен TypeScript?
-      1 - Наличие статической типизации
-      2 - Генерация кода искусственным интелектом
-      3 - Красивое название
-      `,
+      question: `Почему популярен TypeScript?\n1 - Наличие статической типизации\n2 - Генерация кода искусственным интелектом\n3 - Красивое название`,
       rightAnswer: 1,
       category: "Web",
     },
     {
-      question: `
-      Приложения для iOS разрабатывают на языке:
-      1 - Kotlin
-      2 - Go
-      3 - Swift
-      `,
+      question: `Приложения для iOS разрабатывают на языке:\n1 - Kotlin\n2 - Go\n3 - Swift`,
       rightAnswer: 3,
       category: "Mobile",
     },
     {
-      question: `
-      Чаще всего для дизайна интерфейсов используют:
-      1 - Gimp
-      2 - Illustrator
-      3 - Figma
-      `,
+      question: `Чаще всего для дизайна интерфейсов используют:\n1 - Gimp\n2 - Illustrator\n3 - Figma`,
       rightAnswer: 3,
       category: "Дизайн интерфейсов",
     },
     {
-      question: `
-      Как называется документ, в котором описывают разраатываемую игру?
-      1 - Дизайн - документ
-      2 - Игровой документ
-      3 - Не знаю, простите
-      `,
+      question: `Как называется документ, в котором описывают разраатываемую игру?\n1 - Дизайн - документ\n2 - Игровой документ\n3 - Не знаю, простите`,
       rightAnswer: 1,
       category: "GameDev",
     },
     {
-      question: `
-      Какой фреймворк используется при создании мини-приложений ВКонтакте?
-      1 - Angular
-      2 - Vue
-      3 - React
-      `,
+      question: `Какой фреймворк используется при создании мини-приложений ВКонтакте?\n1 - Angular\n2 - Vue\n3 - React`,
       rightAnswer: 3,
       category: "VK MiniApps",
     },
     {
-      question: `
-      Какой символ используется для постановки ударения в голосовом ответе Маруси?
-      1 - *
-      2 - /
-      3 - +
-      `,
+      question: `Какой символ используется для постановки ударения в голосовом ответе Маруси?\n1 - *\n2 - /\n3 - +`,
       rightAnswer: 3,
       category: "Маруся",
     },
     {
-      question: `
-      OpenCV - это:
-      1 - Формат файла
-      2 - Библиотека для Computer Vision на Python
-      3 - Фреймворк для веб - разработки
-      `,
+      question: `OpenCV - это:\n1 - Формат файла\n2 - Библиотека для Computer Vision на Python\n3 - Фреймворк для веб - разработки`,
       rightAnswer: 2,
       category: "Computer vision",
     },
