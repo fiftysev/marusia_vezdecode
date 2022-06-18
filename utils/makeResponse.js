@@ -5,14 +5,14 @@ function makeResponse(
   session,
   version,
   session_state = {},
-  card = {}
+  commands = []
 ) {
   return {
     response: {
       text,
       tts,
       end_session,
-      card,
+      commands,
     },
     session,
     version,

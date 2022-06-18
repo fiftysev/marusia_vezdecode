@@ -126,11 +126,7 @@ app.post("/hook", ({ body }, res) => {
           false,
           session,
           version,
-          newState,
-          {
-            type: "BigImage",
-            image_id: 457239017,
-          }
+          newState
         )
       );
     }
@@ -149,7 +145,13 @@ app.post("/hook", ({ body }, res) => {
         false,
         session,
         version,
-        {}
+        {},
+        [
+          {
+            type: "MiniApp",
+            url: "https://vk.com/app7923597",
+          },
+        ]
       )
     );
   }
