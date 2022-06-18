@@ -26,7 +26,6 @@ app.use(cors());
 
 app.post("/hook", ({ body }, res) => {
   const session = body.session;
-
   const version = body.version;
   const parsedRequest = body.request;
   const command = parsedRequest.command.toLowerCase();
@@ -47,7 +46,7 @@ app.post("/hook", ({ body }, res) => {
     quizQuitTriggers.includes(command.toLowerCase()) &&
     state.answers != undefined
   ) {
-    _.remove(quizController.session_ids, session_id);
+    _.remove(quizController.session_ids, session.session_id);
     return res.send(
       makeResponse(
         `Завершаю викторину!`,
@@ -76,15 +75,8 @@ app.post("/hook", ({ body }, res) => {
     const firstQuestion = quizController.questions[0];
     return res.send(
       makeResponse(
-        `Начинаем викторину!
-    Ответы должны быть в формате 1, 2, 3 (цифра или числительное)
-
-    Первый вопрос:
-    ${firstQuestion.text}`,
-        `
-        Начинаем викторину! Ответы должны быть в формате 1, 2, 3 (цифра или числительное) Первый вопрос
-        ${firstQuestion.tts}
-        `,
+        `Начинаем викторину!\nОтветы должны быть в формате 1, 2, 3 (цифра или числительное)\nПервый вопрос:\n${firstQuestion.text}`,
+        `Начинаем викторину! Ответы должны быть в формате 1, 2, 3 (цифра или числительное) Первый вопрос\n${firstQuestion.tts}`,
         false,
         session,
         version,
@@ -125,23 +117,19 @@ app.post("/hook", ({ body }, res) => {
       const nextQuestion = quizController.questions[newState.question];
       return res.send(
         makeResponse(
-          `Следующий вопрос:
-      ${nextQuestion.text}`,
+          `Следующий вопрос:\n${nextQuestion.text}`,
           `${
             newState.lastAnswerResult
               ? "<speaker audio=marusia-sounds/game-powerup-2>"
               : "<speaker audio=marusia-sounds/game-loss-3>"
-          } 
-          Следующий вопрос
-          ${nextQuestion.tts}
-          `,
+          } Следующий вопрос\n${nextQuestion.tts}`,
           false,
           session,
           version,
           newState,
           {
             type: "BigImage",
-            image_id: "457239017",
+            image_id: 457239017,
           }
         )
       );
@@ -160,7 +148,8 @@ app.post("/hook", ({ body }, res) => {
         "<speaker audio=marusia-sounds/game-win-2>" + recommendation,
         false,
         session,
-        version
+        version,
+        {}
       )
     );
   }
