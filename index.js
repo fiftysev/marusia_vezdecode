@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import _ from "lodash";
 import { teamName, teamNameLocalized, skillName } from "./config.js";
 import { makeResponse } from "./utils/makeResponse.js";
 import { greeting, greetingTTS } from "./responses/greeting.js";
@@ -25,11 +26,14 @@ app.use(cors());
 
 app.post("/hook", ({ body }, res) => {
   const session = body.session;
+  console.log(session);
   const version = body.version;
   const parsedRequest = body.request;
   const command = parsedRequest.command.toLowerCase();
 
-  let state = body.state.session;
+  let state = quizController.session_ids.includes(session.session_id)
+    ? body.state.session
+    : {};
   if (
     (command.includes(teamName) || command.includes(teamNameLocalized)) &&
     (command.includes("вездекод") || command.includes("вездеход"))
@@ -43,16 +47,24 @@ app.post("/hook", ({ body }, res) => {
     quizQuitTriggers.includes(command.toLowerCase()) &&
     state.answers != undefined
   ) {
+    _.remove(quizController.session_ids, session_id);
     return res.send(
-      makeResponse(`Завершаю викторину!`, "", false, session, version, {})
+      makeResponse(
+        `Завершаю викторину!`,
+        "Завершаю викторину",
+        false,
+        session,
+        version,
+        {}
+      )
     );
   }
-  if (quizTrigger.includes(command)) {
+  if (quizTrigger.includes(command.toLowerCase())) {
     if (state.answers != undefined) {
       return res.send(
         makeResponse(
-          `Вы уже начинали опрос, вы можете продолжить его, или выйти командой завершить или закончить`,
-          "",
+          `Вы уже начинали викторину, вы можете продолжить её, или выйти командой Завершить или Закончить`,
+          "Вы уже начинали викторину, вы можете продолжить её, или выйти командой Завершить или Закончить",
           false,
           session,
           version,
@@ -60,6 +72,7 @@ app.post("/hook", ({ body }, res) => {
         )
       );
     }
+    quizController.session_ids.push(session.session_id);
     const firstQuestion = quizController.questions[0];
     return res.send(
       makeResponse(
@@ -67,9 +80,11 @@ app.post("/hook", ({ body }, res) => {
     Начинаем викторину!
     Ответы должны быть в формате 1, 2, 3 (цифра или числительное)
     Первый вопрос:
-    ${firstQuestion.question}
+    ${firstQuestion.text}
     `,
-        "",
+        `Первый вопрос
+        ${firstQuestion.tts}
+        `,
         false,
         session,
         version,
@@ -86,16 +101,21 @@ app.post("/hook", ({ body }, res) => {
       return res.send(
         makeResponse(
           `
-        Повторите ваш запрос:(
-        Список доступных команд:
-        --- ${teamName} вездекод - Приветствие
-        --- опрос, квиз, викторина - Запущу викторину по IT вопросам
-          `,
-          "Повторите ваш запрос",
+          Повторите ваш запрос:(
+          Список доступных команд:
+          --- ${teamName} вездекод - Приветствие
+          --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить
+            `,
+          `
+            Повторите ваш запрос:(
+            Список доступных команд:
+            --- ${teamName} вездекод - Приветствие
+            --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить
+              `,
           false,
           session,
           version,
-          {}
+          state
         )
       );
     }
@@ -110,9 +130,11 @@ app.post("/hook", ({ body }, res) => {
         makeResponse(
           `
       Следующий вопрос:
-      ${nextQuestion.question}
+      ${nextQuestion.text}
       `,
-          "",
+          `Следующий вопрос
+          ${nextQuestion.tts}
+          `,
           false,
           session,
           version,
@@ -125,13 +147,14 @@ app.post("/hook", ({ body }, res) => {
       state.current_category,
       command
     );
+    const recommendation = quizController.recommendation(lastState);
     return res.send(
       makeResponse(
         `
       Викторина окончена!
-      ${quizController.recommendation(lastState)}
+      ${recommendation}
       `,
-        "",
+        recommendation,
         false,
         session,
         version
@@ -140,7 +163,13 @@ app.post("/hook", ({ body }, res) => {
   }
   if (quitSkillTriggers.includes(command.toLowerCase)) {
     return res.send(
-      makeResponse("До скорых встреч", "", true, session, version)
+      makeResponse(
+        "До скорых встреч",
+        "До скорых встреч",
+        true,
+        session,
+        version
+      )
     );
   }
   return res.send(
