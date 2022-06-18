@@ -15,4 +15,8 @@ const quizAnswerTrigger = [
   "третье",
 ];
 
-export { quizTrigger, quizAnswerTrigger };
+const quizQuitTriggers = ["завершить", "закончить"];
+
+const quitSkillTriggers = ["пока", "до свидания", "выход"];
+
+export { quizTrigger, quizAnswerTrigger, quizQuitTriggers, quitSkillTriggers };

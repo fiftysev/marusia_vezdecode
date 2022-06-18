@@ -3,7 +3,12 @@ import cors from "cors";
 import { teamName, teamNameLocalized, skillName } from "./config.js";
 import { makeResponse } from "./utils/makeResponse.js";
 import { greeting, greetingTTS } from "./responses/greeting.js";
-import { quizAnswerTrigger, quizTrigger } from "./utils/triggers.js";
+import {
+  quitSkillTriggers,
+  quizAnswerTrigger,
+  quizQuitTriggers,
+  quizTrigger,
+} from "./utils/triggers.js";
 import { Quiz } from "./responses/quiz.js";
 
 const app = express();
@@ -25,9 +30,6 @@ app.post("/hook", ({ body }, res) => {
   const command = parsedRequest.command;
 
   let state = body.state.session;
-
-  if ((command = "Помощь")) {
-  }
   if (
     (command.includes(teamName) || command.includes(teamNameLocalized)) &&
     (command.includes("вездекод") || command.includes("вездеход"))
@@ -36,11 +38,20 @@ app.post("/hook", ({ body }, res) => {
       makeResponse(greeting, greetingTTS, false, session, version, state)
     );
   }
+
+  if (
+    quizQuitTriggers.includes(command.toLowerCase()) &&
+    state.answers != undefined
+  ) {
+    return res.send(
+      makeResponse(`Завершаю викторину!`, "", false, session, version, {})
+    );
+  }
   if (quizTrigger.includes(command)) {
-    if (state != {}) {
+    if (state.answers != undefined) {
       return res.send(
         makeResponse(
-          `Вы уже начинали опрос, вы можете продолжить его, или остановить командой стоп`,
+          `Вы уже начинали опрос, вы можете продолжить его, или выйти командой завершить или закончить`,
           "",
           false,
           session,
@@ -70,13 +81,8 @@ app.post("/hook", ({ body }, res) => {
       )
     );
   }
-  if (command.toLowerCase() == "стоп") {
-    return res.send(
-      makeResponse(`Завершаю викторину!`, "", false, session, version, {})
-    );
-  }
   if (quizAnswerTrigger.includes(command)) {
-    if (state == {}) {
+    if (state.answers == undefined) {
       return res.send(
         makeResponse(
           `
@@ -93,7 +99,7 @@ app.post("/hook", ({ body }, res) => {
         )
       );
     }
-    if (state.question < 7) {
+    if (state.question < 7 && state.question > -1) {
       const newState = quizController.updateState(
         state,
         state.current_category,
@@ -132,19 +138,29 @@ app.post("/hook", ({ body }, res) => {
       )
     );
   }
+  if (quitSkillTriggers.includes(command.toLowerCase)) {
+    return res.send(
+      makeResponse("До скорых встреч", "", true, session, version)
+    );
+  }
   return res.send(
     makeResponse(
       `
       Повторите ваш запрос:(
       Список доступных команд:
       --- ${teamName} вездекод - Приветствие
-      --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой стоп
+      --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить
         `,
-      "Повторите ваш запрос",
+      `
+        Повторите ваш запрос:(
+        Список доступных команд:
+        --- ${teamName} вездекод - Приветствие
+        --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой завершить или закончить
+          `,
       false,
       session,
       version,
-      {}
+      state
     )
   );
 });
