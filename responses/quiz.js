@@ -1,5 +1,6 @@
 import { stat } from "fs";
 import { answerMapping } from "../utils/marusya_encoding.js";
+import { quizResultsText } from "./quizResults.js";
 
 class Quiz {
   questions = [
@@ -131,33 +132,10 @@ class Quiz {
       return resText;
     }
 
-    if (categories.includes("Web") || categories.includes("Backend")) {
-      resText +=
-        "Ты знаешь что-то о веб-разработке, обрати внимания на задания Web и Backend :)\n";
-    }
+    categories.forEach((element) => {
+      resText += quizResultsText[element];
+    });
 
-    if (categories.includes("Mobile"))
-      resText +=
-        "У тебя есть интерес к мобильной разработке, можешь попробовать свои силы в категории Mobile ;)\n";
-
-    if (categories.includes("Computer Vision")) {
-      resText +=
-        "Кажется, задания категорий Анализ данных и Computer Vision могли бы заинтересовать тебя:)\n";
-    }
-
-    if (categories.includes("Маруся")) {
-      resText +=
-        "Не все еще освоили работу с Марусей (и зря), дерзай, категория Маруся для тебя!\n";
-    }
-
-    if (categories.includes("VK MiniApps"))
-      resText += "Мини-приложения - это очень интересно, попробуй!\n";
-    if (categories.includes("GameDev"))
-      resText +=
-        "Попробуй увлечь своей историей и визуалом, сделай пару заданий в GameDev []_[]!\n";
-    if (categories.includes("Дизайн интерфейсов"))
-      resText +=
-        "Кажется, у тебя есть знания про UI/UX, взгляни на задания категории Дизайн интерфейсов ;)\n";
     resText +=
       "\nНе забывай, что ты можешь решить задачи даже из тех сфер, которые тебе мало знакомы, главное пробуй!";
     return resText;

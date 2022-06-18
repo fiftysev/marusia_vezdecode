@@ -1,12 +1,10 @@
 import express from "express";
 import cors from "cors";
-import { teamName, teamNameLocalized } from "./config.js";
+import { teamName, teamNameLocalized, skillName } from "./config.js";
 import { makeResponse } from "./utils/makeResponse.js";
 import { greeting, greetingTTS } from "./responses/greeting.js";
 import { quizAnswerTrigger, quizTrigger } from "./utils/triggers.js";
 import { Quiz } from "./responses/quiz.js";
-import { stat } from "fs";
-import { answerMapping } from "./utils/marusya_encoding.js";
 
 const app = express();
 const quizController = new Quiz();
@@ -27,6 +25,9 @@ app.post("/hook", ({ body }, res) => {
   const command = parsedRequest.command;
 
   let state = body.state.session;
+
+  if ((command = "Помощь")) {
+  }
   if (
     (command.includes(teamName) || command.includes(teamNameLocalized)) &&
     (command.includes("вездекод") || command.includes("вездеход"))
@@ -57,7 +58,24 @@ app.post("/hook", ({ body }, res) => {
       )
     );
   }
-  if (quizAnswerTrigger.includes(command) && state != {}) {
+  if (quizAnswerTrigger.includes(command)) {
+    if (state == {}) {
+      return res.send(
+        makeResponse(
+          `
+        Повторите ваш запрос:(
+        Список доступных команд:
+        --- ${teamName} вездекод - Приветствие
+        --- опрос, квиз, викторина - Запущу викторину по IT вопросам
+          `,
+          "Повторите ваш запрос",
+          false,
+          session,
+          version,
+          {}
+        )
+      );
+    }
     if (state.question < 7) {
       const newState = quizController.updateState(
         state,
@@ -87,7 +105,7 @@ app.post("/hook", ({ body }, res) => {
     return res.send(
       makeResponse(
         `
-      Опрос Окончен!
+      Викторина окончена!
       ${quizController.recommendation(lastState)}
       `,
         "",
@@ -99,7 +117,12 @@ app.post("/hook", ({ body }, res) => {
   }
   return res.send(
     makeResponse(
-      "Повторите ваш запрос:(",
+      `
+      Повторите ваш запрос:(
+      Список доступных команд:
+      --- ${teamName} вездекод - Приветствие
+      --- опрос, квиз, викторина - Запущу викторину по IT вопросам
+        `,
       "Повторите ваш запрос",
       false,
       session,

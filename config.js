@@ -1,4 +1,5 @@
 const teamName = "uroboros";
 const teamNameLocalized = "уроборос";
+const skillName = "скилл программиста";
 
-export { teamName, teamNameLocalized };
+export { teamName, teamNameLocalized, skillName };
