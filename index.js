@@ -3,8 +3,11 @@ import cors from "cors";
 import { teamName, teamNameLocalized } from "./config.js";
 import { makeResponse } from "./utils/makeResponse.js";
 import { greeting, greetingTTS } from "./responses/greeting.js";
+import { quizTrigger } from "./utils/triggers.js";
+import { Quiz } from "./responses/quiz.js";
 
 const app = express();
+const quizController = new Quiz();
 const port = 3000;
 
 app.use(express.json());
@@ -28,15 +31,37 @@ app.post("/hook", ({ body }, res) => {
       makeResponse(greeting, greetingTTS, false, session, version)
     );
   }
-  return res.send({
-    response: {
-      text: "Повторите ваш запрос :(",
-      tts: "Повторите ваш запрос",
-      end_session: false,
-    },
-    session,
-    version,
-  });
+  if (quizTrigger.includes(command)) {
+    const firstQuestion = quizController.questions[0];
+    res.send(
+      makeResponse(
+        `
+    Начинаем викторину!
+    Ответы должны быть в формате 1, 2, 3 (цифра или числительное)
+    Первый вопрос:
+    ${firstQuestion.question}
+    `,
+        "",
+        false,
+        session,
+        version,
+        {
+          answers: {},
+          current_category: firstQuestion.category,
+        }
+      )
+    );
+  }
+  return res.send(
+    makeResponse(
+      "Повторите ваш запрос:(",
+      "Повторите ваш запрос",
+      false,
+      session,
+      version,
+      {}
+    )
+  );
 });
 
 app.listen(port, () => {

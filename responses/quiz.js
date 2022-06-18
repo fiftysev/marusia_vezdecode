@@ -1,4 +1,4 @@
-import { answerMapping } from "../utils/marusya_encoding";
+import { answerMapping } from "../utils/marusya_encoding.js";
 
 class Quiz {
   questions = [
@@ -84,31 +84,17 @@ class Quiz {
     },
   ];
 
-  state = {
-    question: 0,
-    answers: {},
-  };
+  constructor() {}
 
-  constructor() {
-    this.questions.forEach((element) => {
-      this.state.answers[element] = false;
-    });
-  }
-
-  nextQuestion(state) {
-    if (state.question >= 8) {
-      throw new Error("Вопросы закончились");
-    }
-
-    return this.questions[state.question];
-  }
-
-  updateState(category, answer) {
+  updateState(state, category, answer) {
     const mappedAnswer = answerMapping[answer];
     if (mappedAnswer == undefined || null) {
       throw new SyntaxError("Попробовать бы еще раз");
     }
-    this.state.answers[category] =
+    state.answers[category] =
       this.questions[this.state.question] === mappedAnswer;
+    return state;
   }
 }
+
+export { Quiz };
