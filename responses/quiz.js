@@ -151,11 +151,13 @@ class Quiz {
     if (mappedAnswer == undefined || null) {
       throw new SyntaxError("Попробовать бы еще раз");
     }
-    state.answers[category] =
+    const isRightAnswer =
       this.questions[state.question].rightAnswer === mappedAnswer;
+    state.answers[category] = isRightAnswer;
     state.question++;
     if (state.question < 8)
       state.current_category = this.questions[state.question].category;
+    state.lastAnswerResult = isRightAnswer;
     return state;
   }
 
