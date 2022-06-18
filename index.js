@@ -33,10 +33,22 @@ app.post("/hook", ({ body }, res) => {
     (command.includes("вездекод") || command.includes("вездеход"))
   ) {
     return res.send(
-      makeResponse(greeting, greetingTTS, false, session, version)
+      makeResponse(greeting, greetingTTS, false, session, version, state)
     );
   }
   if (quizTrigger.includes(command)) {
+    if (state != {}) {
+      return res.send(
+        makeResponse(
+          `Вы уже начинали опрос, вы можете продолжить его, или остановить командой стоп`,
+          "",
+          false,
+          session,
+          version,
+          state
+        )
+      );
+    }
     const firstQuestion = quizController.questions[0];
     return res.send(
       makeResponse(
@@ -56,6 +68,11 @@ app.post("/hook", ({ body }, res) => {
           current_category: firstQuestion.category,
         }
       )
+    );
+  }
+  if (command.toLowerCase() == "стоп") {
+    return res.send(
+      makeResponse(`Завершаю викторину!`, "", false, session, version, {})
     );
   }
   if (quizAnswerTrigger.includes(command)) {
@@ -121,7 +138,7 @@ app.post("/hook", ({ body }, res) => {
       Повторите ваш запрос:(
       Список доступных команд:
       --- ${teamName} вездекод - Приветствие
-      --- опрос, квиз, викторина - Запущу викторину по IT вопросам
+      --- опрос, квиз, викторина - Запущу викторину по IT вопросам, остановить ее можно командой стоп
         `,
       "Повторите ваш запрос",
       false,
