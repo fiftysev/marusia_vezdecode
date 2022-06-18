@@ -25,7 +25,7 @@ app.post("/hook", ({ body }, res) => {
     return res.send({
       response: {
         text: "Привет вездекодерам",
-        tts: "Привет вездекодерам",
+        tts: "Привет вездек+одерам",
         end_session: false,
       },
       session,
